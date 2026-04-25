@@ -5,17 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src https://script.google.com https://script.googleusercontent.com; img-src 'self' data:;">
 <title>Sean's Workout</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
-/* ============================================================
-   CONFIGURATION — paste your Apps Script URL here
-   ============================================================ */
-:root {
-  --script-url: "PASTE_YOUR_SCRIPT_URL_HERE";
-}
-
 /* ============================================================
    DESIGN TOKENS
    ============================================================ */
@@ -65,16 +59,6 @@ h1 span{color:var(--gold);}
 h2{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:16px;}
 .tagline{font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:28px;}
 .section-label{font-size:9px;letter-spacing:.25em;color:var(--dim);text-transform:uppercase;margin-bottom:12px;}
-
-/* ============================================================
-   SETUP BANNER
-   ============================================================ */
-#setup-banner{background:linear-gradient(135deg,#1a1500,#111);border:1px solid #E8C54744;border-radius:12px;padding:14px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start;}
-#setup-banner.hidden{display:none;}
-.setup-icon{font-size:20px;flex-shrink:0;}
-.setup-text{font-size:12px;color:var(--tx2);line-height:1.6;}
-.setup-text strong{color:var(--gold);}
-.setup-text a{color:var(--gold);text-decoration:none;}
 
 /* ============================================================
    SCHEDULE
@@ -266,16 +250,6 @@ input[type=range]{padding:4px 0;border:none;background:none;accent-color:var(--g
 </style>
 </head>
 <body>
-
-<!-- ============================================================
-     SETUP BANNER (hidden once URL is configured)
-     ============================================================ -->
-<div id="setup-banner">
-  <span class="setup-icon">⚙️</span>
-  <div class="setup-text">
-    <strong>One-time setup needed.</strong> Follow the setup instructions below to connect Google Sheets, then paste your script URL into this file. <a href="#" onclick="showPage('setup',document.querySelectorAll('.nav-item')[4]);return false;">View setup guide →</a>
-  </div>
-</div>
 
 <!-- ============================================================
      PAGE: PLAN
@@ -514,7 +488,7 @@ input[type=range]{padding:4px 0;border:none;background:none;accent-color:var(--g
     <div class="bw-recent" id="bw-recent"></div>
   </div>
 
-  <div style="font-size:11px;color:var(--dim);text-align:center;padding:8px 0;">Today's logged entries appear on the History tab</div>
+  <div style="font-size:11px;color:var(--dim);text-align:center;padding:8px 0;">Today's logged entries appear on the Progress tab</div>
 </div>
 
 <!-- ============================================================
@@ -584,130 +558,26 @@ input[type=range]{padding:4px 0;border:none;background:none;accent-color:var(--g
   <div id="history-list"></div>
 </div>
 
-<!-- ============================================================
-     PAGE: SETUP
-     ============================================================ -->
-<div class="page" id="page-setup">
-  <div class="eyebrow">One-Time Setup</div>
-  <h1>Connect <span>Sheets.</span></h1>
-  <p class="tagline">Takes about 10 minutes. Do it once, works forever.</p>
-
-  <div class="card">
-    <div class="card-title">Step 1 — Create the Google Sheet</div>
-    <p style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:12px;">Go to <strong style="color:var(--tx);">sheets.new</strong> in your browser. A new blank spreadsheet will open. Rename it <strong style="color:var(--tx);">"Sean's Workout Log"</strong> by clicking the title at the top.</p>
-    <a href="https://sheets.new" target="_blank" class="btn btn-primary btn-sm" style="display:inline-block;text-decoration:none;">Open sheets.new →</a>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Step 2 — Open Apps Script</div>
-    <p style="font-size:13px;color:var(--tx2);line-height:1.7;">In your new sheet, click the menu: <strong style="color:var(--tx);">Extensions → Apps Script</strong>. A new tab will open with a code editor. Delete everything in the editor.</p>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Step 3 — Paste This Code</div>
-    <p style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:12px;">Copy the entire block below and paste it into the Apps Script editor:</p>
-    <textarea id="script-code" readonly style="height:180px;font-family:monospace;font-size:11px;resize:none;background:#111;border-color:var(--b2);color:#aaa;line-height:1.5;"></textarea>
-    <div class="btn-row" style="margin-top:10px;">
-      <button class="btn btn-primary btn-sm" onclick="copyScript()">Copy Script</button>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Step 4 — Deploy It</div>
-    <ol style="font-size:13px;color:var(--tx2);line-height:2;padding-left:18px;">
-      <li>Click <strong style="color:var(--tx);">Deploy → New deployment</strong></li>
-      <li>Click the gear icon next to "Type" and select <strong style="color:var(--tx);">Web app</strong></li>
-      <li>Set "Execute as" to <strong style="color:var(--tx);">Me</strong></li>
-      <li>Set "Who has access" to <strong style="color:var(--tx);">Anyone</strong></li>
-      <li>Click <strong style="color:var(--tx);">Deploy</strong></li>
-      <li>Click <strong style="color:var(--tx);">Authorize access</strong> and follow the prompts</li>
-      <li>Copy the <strong style="color:var(--gold);">Web app URL</strong> that appears</li>
-    </ol>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Step 5 — Paste Your URL Here</div>
-    <p style="font-size:13px;color:var(--tx2);line-height:1.7;margin-bottom:12px;">Paste the Web app URL you just copied:</p>
-    <div class="ctrl-group">
-      <input type="text" id="script-url-input" placeholder="https://script.google.com/macros/s/..."/>
-    </div>
-    <button class="btn btn-primary" onclick="saveScriptUrl()">Save & Connect</button>
-    <div id="url-status" style="font-size:12px;color:var(--grn);margin-top:10px;display:none;">✓ Connected! Your data will now sync to Google Sheets.</div>
-  </div>
-
-  <div class="card" style="background:#111;">
-    <div class="card-title" style="color:var(--mu);">That's it.</div>
-    <p style="font-size:13px;color:var(--dim);line-height:1.7;">Every workout you log will now appear in your Google Sheet in real time. Open the sheet any time to see your full history, build your own charts in Sheets, or share with a trainer.</p>
-  </div>
-</div>
-
 <!-- NAV -->
 <nav>
   <button class="nav-item active" onclick="showPage('plan',this)"><span class="ni">📋</span>Plan</button>
   <button class="nav-item" onclick="showPage('weights',this)"><span class="ni">🏋️</span>Weights</button>
   <button class="nav-item" onclick="showPage('log',this)"><span class="ni">📝</span>Log</button>
   <button class="nav-item" onclick="showPage('history',this)"><span class="ni">📈</span>Progress</button>
-  <button class="nav-item" onclick="showPage('setup',this)"><span class="ni">⚙️</span>Setup</button>
 </nav>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ============================================================
-// APPS SCRIPT CODE (shown in setup page)
-// ============================================================
-const APPS_SCRIPT_CODE = `function doPost(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var data = JSON.parse(e.postData.contents);
-    var sheet = ss.getSheetByName(data.sheet) || ss.insertSheet(data.sheet);
-
-    if (sheet.getLastRow() === 0) {
-      sheet.appendRow(data.headers);
-      sheet.getRange(1, 1, 1, data.headers.length)
-           .setFontWeight('bold')
-           .setBackground('#1a1a2e')
-           .setFontColor('#ffffff');
-    }
-    sheet.appendRow(data.row);
-
-    return ContentService
-      .createTextOutput(JSON.stringify({status:'ok'}))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({status:'error', message: err.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}
-
-function doGet(e) {
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheetName = e.parameter.sheet || 'Workouts';
-    var sheet = ss.getSheetByName(sheetName);
-    if (!sheet) return ContentService
-      .createTextOutput(JSON.stringify({status:'ok', rows:[]}))
-      .setMimeType(ContentService.MimeType.JSON);
-
-    var data = sheet.getDataRange().getValues();
-    return ContentService
-      .createTextOutput(JSON.stringify({status:'ok', rows: data}))
-      .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService
-      .createTextOutput(JSON.stringify({status:'error', message: err.toString()}))
-      .setMimeType(ContentService.MimeType.JSON);
-  }
-}`;
-
-document.getElementById('script-code').value = APPS_SCRIPT_CODE;
+// Injected at deploy time by GitHub Actions
+const SCRIPT_URL = 'SCRIPT_URL_PLACEHOLDER';
+const AUTH_TOKEN = 'AUTH_TOKEN_PLACEHOLDER';
 
 // ============================================================
 // STATE
 // ============================================================
 const SK = 'sean_wk_v2';
-let state = {scriptUrl:'', workouts:[], checkins:[], bodyweights:[]};
+let state = {workouts:[], checkins:[], bodyweights:[]};
 try { state = Object.assign(state, JSON.parse(localStorage.getItem(SK)||'{}')); } catch(e){}
 
 let numSets = 3;
@@ -784,7 +654,6 @@ function showPage(id, btn) {
   if (btn) btn.classList.add('active');
   if (id === 'history') { loadFromSheets(); }
   if (id === 'log') { setDefaultDates(); renderBwRecent(); }
-  if (id === 'setup') { renderScriptUrlStatus(); }
   window.scrollTo(0,0);
 }
 
@@ -857,18 +726,16 @@ async function saveWorkout() {
   showToast('✓ Saved locally.');
 
   // Push to Sheets
-  if (state.scriptUrl) {
-    showSaving();
-    await pushToSheets('Workouts',
-      ['Timestamp','Date','Day','Exercise','Set1_lbs','Set1_reps','Set2_lbs','Set2_reps','Set3_lbs','Set3_reps','Set4_lbs','Set4_reps','Notes'],
-      [new Date().toISOString(), date, day, exercise,
-        sets[0]?.weight||'', sets[0]?.reps||'',
-        sets[1]?.weight||'', sets[1]?.reps||'',
-        sets[2]?.weight||'', sets[2]?.reps||'',
-        sets[3]?.weight||'', sets[3]?.reps||'',
-        note]
-    );
-  }
+  showSaving();
+  await pushToSheets('Workouts',
+    ['Timestamp','Date','Day','Exercise','Set1_lbs','Set1_reps','Set2_lbs','Set2_reps','Set3_lbs','Set3_reps','Set4_lbs','Set4_reps','Notes'],
+    [new Date().toISOString(), date, day, exercise,
+      sets[0]?.weight||'', sets[0]?.reps||'',
+      sets[1]?.weight||'', sets[1]?.reps||'',
+      sets[2]?.weight||'', sets[2]?.reps||'',
+      sets[3]?.weight||'', sets[3]?.reps||'',
+      note]
+  );
 }
 
 async function saveCheckin() {
@@ -883,13 +750,11 @@ async function saveCheckin() {
   saveState();
   showToast('✓ Check-in saved.');
 
-  if (state.scriptUrl) {
-    showSaving();
-    await pushToSheets('CheckIns',
-      ['Timestamp','Date','Duration_min','Sleep_hrs','Energy_1_10'],
-      [new Date().toISOString(), date, duration, sleep, energy]
-    );
-  }
+  showSaving();
+  await pushToSheets('CheckIns',
+    ['Timestamp','Date','Duration_min','Sleep_hrs','Energy_1_10'],
+    [new Date().toISOString(), date, duration, sleep, energy]
+  );
 }
 
 async function saveBodyweight() {
@@ -905,13 +770,11 @@ async function saveBodyweight() {
   renderBwRecent();
   showToast('✓ Weight logged.');
 
-  if (state.scriptUrl) {
-    showSaving();
-    await pushToSheets('Bodyweight',
-      ['Timestamp','Date','Weight_lbs'],
-      [new Date().toISOString(), date, bw]
-    );
-  }
+  showSaving();
+  await pushToSheets('Bodyweight',
+    ['Timestamp','Date','Weight_lbs'],
+    [new Date().toISOString(), date, bw]
+  );
 }
 
 function clearWorkoutForm() {
@@ -935,13 +798,11 @@ async function loadFromSheets() {
   renderHistory();
   updateStats();
 
-  if (!state.scriptUrl) return;
   try {
-    // Load from Sheets and merge (deduplicate by date+exercise for workouts)
     const [wRes, bwRes, ciRes] = await Promise.all([
-      fetch(state.scriptUrl + '?sheet=Workouts'),
-      fetch(state.scriptUrl + '?sheet=Bodyweight'),
-      fetch(state.scriptUrl + '?sheet=CheckIns')
+      fetch(SCRIPT_URL + '?sheet=Workouts&token=' + AUTH_TOKEN),
+      fetch(SCRIPT_URL + '?sheet=Bodyweight&token=' + AUTH_TOKEN),
+      fetch(SCRIPT_URL + '?sheet=CheckIns&token=' + AUTH_TOKEN)
     ]);
     const wData = await wRes.json();
     const bwData = await bwRes.json();
@@ -950,7 +811,6 @@ async function loadFromSheets() {
     if (bwData.status === 'ok' && bwData.rows.length > 1) {
       const rows = bwData.rows.slice(1); // skip header
       const sheetsWeights = rows.map(r => ({id: r[0], date: r[1], weight: parseFloat(r[2])})).filter(r => r.date && r.weight);
-      // Merge keeping local + sheets, deduplicate by date
       const existing = new Set(state.bodyweights.map(b => b.date));
       sheetsWeights.forEach(sw => { if (!existing.has(sw.date)) state.bodyweights.push(sw); });
       state.bodyweights.sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1057,45 +917,15 @@ function updateStats() {
 }
 
 // ============================================================
-// SETUP PAGE
-// ============================================================
-function copyScript() {
-  const el = document.getElementById('script-code');
-  el.select();
-  try { document.execCommand('copy'); showToast('✓ Script copied!'); }
-  catch(e) { showToast('Long-press the code box to copy.'); }
-}
-
-function saveScriptUrl() {
-  const url = document.getElementById('script-url-input').value.trim();
-  if (!url.includes('script.google.com')) { showToast('That doesn\'t look right — paste the full URL.'); return; }
-  state.scriptUrl = url;
-  saveState();
-  document.getElementById('url-status').style.display = 'block';
-  document.getElementById('setup-banner').classList.add('hidden');
-  showToast('✓ Connected to Google Sheets!');
-}
-
-function renderScriptUrlStatus() {
-  const input = document.getElementById('script-url-input');
-  if (input && state.scriptUrl) input.value = state.scriptUrl;
-  if (state.scriptUrl) {
-    const s = document.getElementById('url-status');
-    if (s) s.style.display = 'block';
-  }
-}
-
-// ============================================================
 // SHEETS API
 // ============================================================
 async function pushToSheets(sheetName, headers, row) {
-  if (!state.scriptUrl) return;
   try {
-    await fetch(state.scriptUrl, {
+    await fetch(SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({sheet: sheetName, headers, row})
+      body: JSON.stringify({sheet: sheetName, headers, row, token: AUTH_TOKEN})
     });
     showToast('✓ Synced to Sheets.');
   } catch(e) {
@@ -1133,7 +963,6 @@ function showToast(msg) {
 renderSets();
 setDefaultDates();
 renderBwRecent();
-if (state.scriptUrl) document.getElementById('setup-banner').classList.add('hidden');
 </script>
 </body>
 </html>
